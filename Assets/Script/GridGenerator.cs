@@ -6,12 +6,14 @@ public class GridGenerator : MonoBehaviour
     // 복사해서 깔아줄 그리드 타일 (붕어빵 틀)
     public GameObject tilePrefab;
 
-    // 가로 6칸, 세로 6칸 설정
-    public int width = 6;
-    public int height = 6;
+    // 가로 9칸, 세로 9칸 설정
+    public int width = 9;
+    public int height = 9;
 
     void Start()
     {
+        Debug.Log("Hello World");
+
         // 게임이 시작되자마자 그리드를 깔아줍니다.
         GenerateGrid();
     }
@@ -24,7 +26,7 @@ public class GridGenerator : MonoBehaviour
             return;
         }
 
-        // 가로(X)로 6번, 세로(Y)로 6번 반복하며 총 36개의 타일을 생성합니다.
+        // 가로(X)로 9번, 세로(Y)로 9번 반복하며 총 81개의 타일을 생성합니다.
         for (int x = 0; x < width; x++)
         {
             for (int y = 0; y < height; y++)

@@ -2,13 +2,13 @@ using UnityEngine;
 
 public class BlockController : MonoBehaviour
 {
-    [Header("그리드 이동 범위 설정 (6x6)")]
+    [Header("그리드 이동 범위 설정 (9x9)")]
     // 블록이 이동할 수 있는 최소, 최대 좌표입니다.
-    // 0칸부터 5칸까지 총 6칸을 이동하도록 기본 설정했습니다.
+    // 0칸부터 8칸까지 총 9칸을 이동하도록 기본 설정했습니다.
     public float minX = 0f;
-    public float maxX = 5f;
+    public float maxX = 8f;
     public float minY = 0f;
-    public float maxY = 5f;
+    public float maxY = 8f;
 
     // 드래그 중인지 확인하는 변수
     private bool isDragging = false;
@@ -35,7 +35,7 @@ public class BlockController : MonoBehaviour
             float snappedX = Mathf.Round(targetPosition.x);
             float snappedY = Mathf.Round(targetPosition.y);
 
-            // 핵심 2: 블록이 설정한 6x6 그리드(min ~ max) 밖으로 나가지 않게 가둡니다.
+            // 핵심 2: 블록이 설정한 9x9 그리드(min ~ max) 밖으로 나가지 않게 가둡니다.
             snappedX = Mathf.Clamp(snappedX, minX, maxX);
             snappedY = Mathf.Clamp(snappedY, minY, maxY);
 
