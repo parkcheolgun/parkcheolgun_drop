@@ -32,7 +32,9 @@ public class HoleController : MonoBehaviour
     void Start()
     {
         remainingCapacity = shapeCells.Length;
-        spriteRenderer.color = color.ToColor();
+        Color tint = color.ToColor();
+        tint.a = spriteRenderer.color.a; // 프리팹에 설정된 반투명(홀 느낌)을 유지합니다.
+        spriteRenderer.color = tint;
         UpdateCapacityLabel();
         transform.position = GridManager.Instance.GetWorldPosition(gridPosition);
         GameManager.Instance?.RegisterHole(this);
