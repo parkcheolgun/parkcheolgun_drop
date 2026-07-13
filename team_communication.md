@@ -4,6 +4,34 @@
 
 ---
 
+## 2026-07-13 — 로컬 환경 이슈 진단 및 카메라 자동 맞춤 추가 (Claude Code)
+
+**브랜치**: `claude/drop-blob-prototype-spec-kpl3e6`
+**PR**: [#1 프로토타입 기획서 기반 코어 루프 구현](https://github.com/parkcheolgun/parkcheolgun_drop/pull/1) (draft, open)
+
+### PR #1 모니터링
+- 아래 QA 완료 시점부터 PR #1 웹훅 구독 + 1시간 간격 상태 재확인(CI/리뷰 코멘트/머지 충돌)을 진행.
+- 이 저장소는 CI 미구성(체크 0건), 협업자 없음 → 변화 요인이 없다고 판단해 **모니터링 중단 요청 받고 웹훅 구독 해제 + 예약된 재확인 트리거 삭제**.
+
+### 로컬 Unity Play 테스트 이슈 진단
+- 사용자가 로컬 Unity 에디터에서 Play 했으나 "바뀐 게 하나도 없다"고 보고.
+- SourceTree 스크린샷 확인 결과, 커밋 히스토리(`claude.md 수정`, `Add project instructions and Unity .gitignore` 등)가 이번 작업 커밋과 전혀 다름을 발견.
+- 원격 저장소 설정을 확인해보니 origin이 **`parkcheolgun/parkcheolgun_drop_test`**(별개 저장소)를 가리키고 있었음 — 로컬 폴더 자체가 이번 작업 대상(`parkcheolgun/parkcheolgun_drop`)과 다른 저장소였던 것이 원인으로 확인됨.
+- 조치: `_test` 저장소에 남길 작업이 없음을 확인 후, 해당 폴더의 origin 리모트 URL을 `parkcheolgun_drop`으로 변경 → 패치 → `claude/drop-blob-prototype-spec-kpl3e6` 강제 체크아웃하는 절차를 안내.
+
+### 카메라 자동 맞춤 추가
+- 요청: "플레이했을 때 격자가 화면 정중앙에 다 보이도록 카메라 세팅"
+- 기존엔 Orthographic Size를 4로 고정해뒀는데, 이는 특정 화면 비율(가로 모드)에서만 맞고 세로 모드 등 다른 비율에선 격자가 잘리거나 치우칠 수 있는 문제가 있었음.
+- **`Assets/Script/CameraGridFit.cs`** 추가: Play 시작 시 `GridManager`의 격자 크기(width/height/cellSize)와 카메라의 실제 aspect를 읽어 격자 중심으로 카메라 위치를 맞추고, 가로/세로 어느 비율이든 격자 전체 + 여백(0.5)이 화면에 꽉 차도록 `orthographicSize`를 동적으로 계산.
+- Main Camera에 컴포넌트로 연결(`gridManager` 필드는 씬의 `GridManager` 컴포넌트를 직접 참조), 계산식을 수동 시뮬레이션(16:9, 9:16 두 비율)으로 검증 후 커밋·푸시.
+
+### 남은 작업 / 확인 필요 사항
+- 사용자가 **올바른 저장소(`parkcheolgun_drop`)로 새로 클론 또는 리모트 교체 후** 실제 Play 테스트를 아직 진행 중 — 결과 미확인
+- 카메라 자동 맞춤은 로직 시뮬레이션으로만 검증됨, 실제 에디터에서 시각적 확인 필요
+- 이전 항목(방향 화살표 미연결, 테스트 레벨 2~5 미구성)은 그대로 유효
+
+---
+
 ## 2026-07-10 — 프로토타입 기획서 기반 코어 루프 구현 (Claude Code)
 
 **브랜치**: `claude/drop-blob-prototype-spec-kpl3e6`
