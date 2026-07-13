@@ -1,6 +1,8 @@
 using UnityEngine;
 
-// 기획서 3.2, 4, 5: 플레이어가 드래그로 옮기는 유일한 조작 대상.
+// 기획서 v2 §3.2, §4, §5, §9.14: 플레이어가 드래그로 옮기는 유일한 조작 대상.
+// 다중 셀 홀은 shapeCells와 같은 순서로 배치된 자식 SpriteRenderer들을 통해
+// 시각적으로 표현합니다 (앵커 셀 = 루트, 나머지 셀 = 자식 오브젝트).
 [RequireComponent(typeof(SpriteRenderer))]
 [RequireComponent(typeof(BoxCollider2D))]
 public class HoleController : MonoBehaviour
@@ -17,7 +19,7 @@ public class HoleController : MonoBehaviour
     [Header("정원 표시 (선택)")]
     [SerializeField] private TextMesh capacityLabel;
 
-    private SpriteRenderer spriteRenderer;
+    private SpriteRenderer[] cellRenderers;
     private int remainingCapacity;
     private bool isDragging;
     private Vector3 dragStartWorldPos;
@@ -26,15 +28,20 @@ public class HoleController : MonoBehaviour
 
     void Awake()
     {
-        spriteRenderer = GetComponent<SpriteRenderer>();
+        cellRenderers = GetComponentsInChildren<SpriteRenderer>(true);
     }
 
     void Start()
     {
         remainingCapacity = shapeCells.Length;
+
         Color tint = color.ToColor();
-        tint.a = spriteRenderer.color.a; // 프리팹에 설정된 반투명(홀 느낌)을 유지합니다.
-        spriteRenderer.color = tint;
+        tint.a = cellRenderers.Length > 0 ? cellRenderers[0].color.a : 1f;
+        foreach (SpriteRenderer sr in cellRenderers)
+        {
+            sr.color = tint;
+        }
+
         UpdateCapacityLabel();
         transform.position = GridManager.Instance.GetWorldPosition(gridPosition);
         GameManager.Instance?.RegisterHole(this);
@@ -70,7 +77,8 @@ public class HoleController : MonoBehaviour
             : (delta.y > 0 ? DirectionType.Up : DirectionType.Down);
     }
 
-    // 기획서 4.2~4.5: 인접 칸으로 한 칸 이동을 시도하고, 벽이면 취소, 아니면 매칭을 판정합니다.
+    // 기획서 v2 §4, §9.14.2: 인접 칸으로 한 칸 이동을 시도합니다.
+    // 다중 셀 홀은 이동 후 모든 셀을 검사해 하나라도 벽이면 전체 이동을 취소합니다("전부 이동" 또는 "전부 취소").
     public void TryMove(DirectionType direction)
     {
         Vector2Int offset = direction.ToOffset();
@@ -84,7 +92,7 @@ public class HoleController : MonoBehaviour
 
         gridPosition = targetAnchor;
         transform.position = GridManager.Instance.GetWorldPosition(gridPosition);
-        ResolveMatchesAtCurrentPosition(direction);
+        ResolveMatchesAtCurrentPosition();
     }
 
     private bool CanMoveTo(Vector2Int targetAnchor)
@@ -107,7 +115,8 @@ public class HoleController : MonoBehaviour
         return true;
     }
 
-    private void ResolveMatchesAtCurrentPosition(DirectionType? incomingDirection = null)
+    // 기획서 v2 §9.14.1: 매칭은 오직 색상 일치 여부로만 판정됩니다(진입 방향 무관).
+    private void ResolveMatchesAtCurrentPosition()
     {
         foreach (Vector2Int cellOffset in shapeCells)
         {
@@ -116,14 +125,8 @@ public class HoleController : MonoBehaviour
             if (!GridManager.Instance.TryGetObject(cell, out BoardObjectController obj)) continue;
             if (obj.color != color) continue;
 
-            bool facingMatch = obj.direction == DirectionType.All
-                || (incomingDirection.HasValue && obj.direction == incomingDirection.Value.Opposite());
-
-            if (facingMatch)
-            {
-                obj.Consume();
-                remainingCapacity--;
-            }
+            obj.Consume();
+            remainingCapacity--;
         }
 
         UpdateCapacityLabel();
