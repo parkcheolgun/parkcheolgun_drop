@@ -105,6 +105,4 @@ MonoBehaviour:
   m_Name:
   m_EditorClassIdentifier:
   color: 0
-  direction: 4
   gridPosition: {x: 0, y: 0}
-  directionMarker: {fileID: 0}
