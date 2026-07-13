@@ -1,9 +1,9 @@
 using UnityEngine;
 
 // 기획서 v2 §3.2, §4, §5, §9.14: 플레이어가 드래그로 옮기는 유일한 조작 대상.
-// 다중 셀 홀은 shapeCells와 같은 순서로 배치된 자식 SpriteRenderer들을 통해
-// 시각적으로 표현합니다 (앵커 셀 = 루트, 나머지 셀 = 자식 오브젝트).
-[RequireComponent(typeof(SpriteRenderer))]
+// 시각 표현은 프리팹마다 다를 수 있습니다: 1x1은 루트에 스프라이트 1개,
+// 1x2/ㄴ자처럼 모양 전체를 담은 방향별 아트(§11.6)를 쓰는 경우는 자식 오브젝트 하나에
+// 스프라이트를 둡니다. 색상 틴트는 GetComponentsInChildren로 찾은 모든 SpriteRenderer에 적용됩니다.
 [RequireComponent(typeof(BoxCollider2D))]
 public class HoleController : MonoBehaviour
 {
