@@ -7,13 +7,14 @@ public enum ColorType
     Green
 }
 
+// 홀이 드래그로 이동하는 방향(v2 §9.14.1: 오브젝트의 "바라보는 방향" 속성은 폐지되어
+// 이동 방향으로만 쓰이고, 매칭 판정에는 더 이상 사용되지 않음).
 public enum DirectionType
 {
     Up,
     Down,
     Left,
-    Right,
-    All
+    Right
 }
 
 public static class DirectionUtility
@@ -27,19 +28,6 @@ public static class DirectionUtility
             case DirectionType.Left: return new Vector2Int(-1, 0);
             case DirectionType.Right: return new Vector2Int(1, 0);
             default: return Vector2Int.zero;
-        }
-    }
-
-    // 홀이 이 방향으로 들어왔을 때, 오브젝트가 이 방향을 바라보고 있어야 서로 마주본다(매칭).
-    public static DirectionType Opposite(this DirectionType direction)
-    {
-        switch (direction)
-        {
-            case DirectionType.Up: return DirectionType.Down;
-            case DirectionType.Down: return DirectionType.Up;
-            case DirectionType.Left: return DirectionType.Right;
-            case DirectionType.Right: return DirectionType.Left;
-            default: return DirectionType.All;
         }
     }
 
